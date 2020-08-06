@@ -4,6 +4,7 @@ from ..util.process import remove_filler
 import torch
 import numpy as np
 
+
 class AlphaLayer(torch.nn.Module):
     """
     Alpha persistence layer for spatial inputs
@@ -21,5 +22,5 @@ class AlphaLayer(torch.nn.Module):
 
     def forward(self, x):
         dgm = self.fnobj.apply(x, self.maxdim, self.verbose)
-        dgms = tuple(remove_filler(dgm[i], -np.inf) for i in range(self.maxdim+1))
+        dgms = tuple(remove_filler(dgm[i], -np.inf) for i in range(self.maxdim + 1))
         return dgms, True

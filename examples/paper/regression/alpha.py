@@ -1,10 +1,12 @@
 import numpy as np
 
 from problems import generate_rips_problem
-import torch
 import torch.nn as nn
-from topologylayer.nn import *
-from util import penalized_ls, run_trials, run_trials_ols, get_stats, gen_snr_stats, gen_dim_stats
+from topologylayer.nn import (
+    AlphaLayer,
+    SumBarcodeLengths,
+    PartialSumBarcodeLengths,
+)
 from util import gen_mse_be
 from penalties import NormLoss
 
@@ -30,54 +32,55 @@ class TopLoss2(nn.Module):
         dgms, issublevel = self.pdfn(beta)
         return self.topfn((dgms[0], issublevel))
 
+
 # number of features
 p = 100
 
-tpen1 = TopLoss() # sum of barcodes
-tpen2 = TopLoss2() # sum of all but top 2
-lpen1 = NormLoss(p=1) # L1 penalty
-lpen2 = NormLoss(p=2) # L2 penalty
+tpen1 = TopLoss()  # sum of barcodes
+tpen2 = TopLoss2()  # sum of all but top 2
+lpen1 = NormLoss(p=1)  # L1 penalty
+lpen2 = NormLoss(p=2)  # L2 penalty
 
 # run regularization trials
 sigma = 0.05
-lams = lams = np.logspace(-4,1,20)
+lams = lams = np.logspace(-4, 1, 20)
 ns = np.arange(25, 145, 10)
 
 
 def save_csvs(problem, pen, lam, mse, be):
-    fname = 'results2/alpha_' + problem + '_mses_' + pen + '.csv'
-    np.savetxt(fname, mse, delimiter=',')
-    fname = 'results2/alpha_' + problem + '_bes_' + pen + '.csv'
-    np.savetxt(fname, be, delimiter=',')
-    fname = 'results2/alpha_' + problem + '_lam_' + pen + '.csv'
-    np.savetxt(fname, lam, delimiter=',')
+    fname = "results2/alpha_" + problem + "_mses_" + pen + ".csv"
+    np.savetxt(fname, mse, delimiter=",")
+    fname = "results2/alpha_" + problem + "_bes_" + pen + ".csv"
+    np.savetxt(fname, be, delimiter=",")
+    fname = "results2/alpha_" + problem + "_lam_" + pen + ".csv"
+    np.savetxt(fname, lam, delimiter=",")
 
 
-problem = '123'
-beta0 = generate_rips_problem([1., 2., 3.], p)
-np.savetxt('results2/alpha_' + problem + '_beta0.csv', beta0, delimiter=',')
+problem = "123"
+beta0 = generate_rips_problem([1.0, 2.0, 3.0], p)
+np.savetxt("results2/alpha_" + problem + "_beta0.csv", beta0, delimiter=",")
 lam, mse, be = gen_mse_be(beta0, ns, lams, tpen1, sigma=sigma)
-save_csvs(problem, 'tpen1', lam, mse, be)
+save_csvs(problem, "tpen1", lam, mse, be)
 lam, mse, be = gen_mse_be(beta0, ns, lams, tpen2, sigma=sigma)
-save_csvs(problem, 'tpen2', lam, mse, be)
+save_csvs(problem, "tpen2", lam, mse, be)
 lam, mse, be = gen_mse_be(beta0, ns, lams, None, sigma=sigma)
-save_csvs(problem, 'ols', lam, mse, be)
+save_csvs(problem, "ols", lam, mse, be)
 lam, mse, be = gen_mse_be(beta0, ns, lams, lpen1, sigma=sigma)
-save_csvs(problem, 'lpen1', lam, mse, be)
+save_csvs(problem, "lpen1", lam, mse, be)
 lam, mse, be = gen_mse_be(beta0, ns, lams, lpen2, sigma=sigma)
-save_csvs(problem, 'lpen2', lam, mse, be)
+save_csvs(problem, "lpen2", lam, mse, be)
 
 
-problem = '101'
-beta0 = generate_rips_problem([-1., 0., 1.], p)
-np.savetxt('results2/alpha_' + problem + '_beta0.csv', beta0, delimiter=',')
+problem = "101"
+beta0 = generate_rips_problem([-1.0, 0.0, 1.0], p)
+np.savetxt("results2/alpha_" + problem + "_beta0.csv", beta0, delimiter=",")
 lam, mse, be = gen_mse_be(beta0, ns, lams, tpen1, sigma=sigma)
-save_csvs(problem, 'tpen1', lam, mse, be)
+save_csvs(problem, "tpen1", lam, mse, be)
 lam, mse, be = gen_mse_be(beta0, ns, lams, tpen2, sigma=sigma)
-save_csvs(problem, 'tpen2', lam, mse, be)
+save_csvs(problem, "tpen2", lam, mse, be)
 lam, mse, be = gen_mse_be(beta0, ns, lams, None, sigma=sigma)
-save_csvs(problem, 'ols', lam, mse, be)
+save_csvs(problem, "ols", lam, mse, be)
 lam, mse, be = gen_mse_be(beta0, ns, lams, lpen1, sigma=sigma)
-save_csvs(problem, 'lpen1', lam, mse, be)
+save_csvs(problem, "lpen1", lam, mse, be)
 lam, mse, be = gen_mse_be(beta0, ns, lams, lpen2, sigma=sigma)
-save_csvs(problem, 'lpen2', lam, mse, be)
+save_csvs(problem, "lpen2", lam, mse, be)

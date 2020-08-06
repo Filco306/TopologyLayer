@@ -171,7 +171,7 @@ If you're unfamiliar with persistence, it is probably easiest to get started by 
 
 ### LevelSetLayer
 
-A `LevelSetLayer` takes in a function on a fixed space, and outputs a super-level set persistence diagram tensor.  There are two specialized variants: `LevelSetLayer1D` and `LevelSetLayer2D` which operate on 1D and 2D grids.  
+A `LevelSetLayer` takes in a function on a fixed space, and outputs a super-level set persistence diagram tensor.  There are two specialized variants: `LevelSetLayer1D` and `LevelSetLayer2D` which operate on 1D and 2D grids.
 
 `LevelSetLayer1D` only computes 0-dimensional persistence, since this is the only relevant barcode.
 ```python

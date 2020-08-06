@@ -1,6 +1,6 @@
 # various loss functions
 import torch
-import numpy as np
+
 
 class SobLoss(torch.nn.Module):
     """
@@ -10,6 +10,7 @@ class SobLoss(torch.nn.Module):
     parameters:
         p - dimension of norm
     """
+
     def __init__(self, p):
         super(SobLoss, self).__init__()
         self.p = p
@@ -26,6 +27,7 @@ class NormLoss(torch.nn.Module):
     parameters:
         p - dimension of norm
     """
+
     def __init__(self, p):
         super(NormLoss, self).__init__()
         self.p = p

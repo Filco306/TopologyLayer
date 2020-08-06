@@ -9,18 +9,18 @@ def unique_simplices(faces, dim):
     """
     obtain unique simplices up to dimension dim from faces
     """
-    simplices = [[] for k in range(dim+1)]
+    simplices = [[] for k in range(dim + 1)]
     # loop over faces
     for face in faces:
         # loop over dimension
-        for k in range(dim+1):
+        for k in range(dim + 1):
             # loop over simplices
-            for s in combinations(face, k+1):
+            for s in combinations(face, k + 1):
                 simplices[k].append(np.sort(list(s)))
 
     s = SimplicialComplex()
     # loop over dimension
-    for k in range(dim+1):
+    for k in range(dim + 1):
         kcells = np.unique(simplices[k], axis=0)
         for cell in kcells:
             s.append(cell)
@@ -34,8 +34,8 @@ def clique_complex(n, d):
     """
     s = SimplicialComplex()
     # loop over dimension
-    for k in range(d+1):
+    for k in range(d + 1):
         # loop over combinations
-        for cell in combinations(range(n), k+1):
+        for cell in combinations(range(n), k + 1):
             s.append(list(cell))
     return s

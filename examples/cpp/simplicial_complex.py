@@ -1,5 +1,8 @@
 from __future__ import print_function
-from topologylayer.functional.persistence import SimplicialComplex, persistenceForwardCohom
+from topologylayer.functional.persistence import (
+    SimplicialComplex,
+    persistenceForwardCohom,
+)
 from topologylayer.util.process import remove_zero_bars
 import torch
 
@@ -15,20 +18,20 @@ s.append([2])
 s.append([3])
 s.append([4])
 
-s.append([0,1])
-s.append([0,2])
-s.append([0,3])
-s.append([0,4])
+s.append([0, 1])
+s.append([0, 2])
+s.append([0, 3])
+s.append([0, 4])
 
-s.append([1,2])
-s.append([1,3])
-s.append([4,2])
-s.append([4,3])
+s.append([1, 2])
+s.append([1, 3])
+s.append([4, 2])
+s.append([4, 3])
 
-s.append([0,1,2])
-s.append([0,1,3])
-s.append([0,2,4])
-s.append([0,3,4])
+s.append([0, 1, 2])
+s.append([0, 1, 3])
+s.append([0, 2, 4])
+s.append([0, 3, 4])
 
 # initialize internal data structures
 s.initialize()
@@ -37,7 +40,7 @@ s.initialize()
 # we are doing sub-level set persistence
 # expect single H0 [0,inf]
 # expect single H1 [0,2]
-f = torch.Tensor([2., 0., 0., 0., 0.])
+f = torch.Tensor([2.0, 0.0, 0.0, 0.0, 0.0])
 
 # extend filtration to simplical complex
 s.extendFloat(f)

@@ -13,10 +13,11 @@ def penalized_ls(y, X, lam, penalty, verbose=False, lr=1e-1, maxiter=100):
     betals = np.linalg.lstsq(X, y, rcond=1e-4)[0]
     if penalty is None:
         return betals
-    beta = torch.autograd.Variable(torch.tensor(betals, dtype=torch.float).view(-1,1), requires_grad=True)
+    beta = torch.autograd.Variable(
+        torch.tensor(betals, dtype=torch.float).view(-1, 1), requires_grad=True
+    )
     Xt = torch.tensor(X, dtype=torch.float)
-    yt = torch.tensor(y, dtype=torch.float).view(-1,1)
-    #print yt.shape
+    yt = torch.tensor(y, dtype=torch.float).view(-1, 1)
 
     l2 = torch.nn.MSELoss()
 
@@ -24,28 +25,30 @@ def penalized_ls(y, X, lam, penalty, verbose=False, lr=1e-1, maxiter=100):
     for i in range(maxiter):
         optimizer.zero_grad()
         yhat = torch.matmul(Xt, beta)
-        #print yhat.shape
         pen = penalty(beta)
         mse = l2(yt, yhat)
-        loss = lam*pen + mse
+        loss = lam * pen + mse
         loss.backward()
         optimizer.step()
         if verbose and (i % 5 == 0):
-            print ("[Iter %d] [penalty: %f] [mse : %f] [loss : %f]" % (i, pen.item(), mse.item(), loss.item()))
+            print(
+                "[Iter %d] [penalty: %f] [mse : %f] [loss : %f]"
+                % (i, pen.item(), mse.item(), loss.item())
+            )
 
     return beta.detach().numpy().flatten()
 
 
 def get_mse(beta0, beta1, n=10000):
     p = len(beta0)
-    X = np.random.randn(n,p)
+    X = np.random.randn(n, p)
     y0 = X.dot(beta0)
     y1 = X.dot(beta1)
-    return np.mean(np.power(y0 - y1,2))
+    return np.mean(np.power(y0 - y1, 2))
 
 
 def get_backward_error(beta0, beta1):
-    return np.sum(np.power(beta0 - beta1, 2))/np.sum(np.power(beta0, 2))
+    return np.sum(np.power(beta0 - beta1, 2)) / np.sum(np.power(beta0, 2))
 
 
 def choose_best_lam(beta0, y, X, lams, pen):
@@ -60,20 +63,20 @@ def choose_best_lam(beta0, y, X, lams, pen):
 
 
 def gen_mse_be(beta0, ns, lams, pen, sigma=0.05, ntrials=10):
-    l = []
+    li = []
     mse = []
     be = []
     for n in ns:
         for trial in range(ntrials):
             X, y = generate_problem(beta0, n, 0.05)
             ln, msen, ben = choose_best_lam(beta0, y, X, lams, pen)
-            l.append(ln)
+            li.append(ln)
             mse.append(msen)
             be.append(ben)
-    l = np.array(l).reshape(-1,ntrials)
-    mse = np.array(mse).reshape(-1,ntrials)
-    be = np.array(be).reshape(-1,ntrials)
-    return l, mse, be
+    li = np.array(li).reshape(-1, ntrials)
+    mse = np.array(mse).reshape(-1, ntrials)
+    be = np.array(be).reshape(-1, ntrials)
+    return li, mse, be
 
 
 def run_trials(beta0, n, sigma, lam, pen, ntrials=100, maxiter=100):
@@ -87,7 +90,7 @@ def run_trials(beta0, n, sigma, lam, pen, ntrials=100, maxiter=100):
     for i in range(ntrials):
         X, y = generate_problem(beta0, n, sigma)
         beta1 = penalized_ls(y, X, lam, pen, maxiter=maxiter)
-        mses.append(np.linalg.norm(beta0 - beta1)**2)
+        mses.append(np.linalg.norm(beta0 - beta1) ** 2)
     return np.array(mses)
 
 
@@ -101,7 +104,7 @@ def run_trials_ols(beta0, n, sigma, ntrials=100):
     for i in range(ntrials):
         X, y = generate_problem(beta0, n, sigma)
         beta1 = np.linalg.lstsq(X, y, rcond=1e-4)[0]
-        mses.append(np.linalg.norm(beta0 - beta1)**2)
+        mses.append(np.linalg.norm(beta0 - beta1) ** 2)
     return np.array(mses)
 
 
@@ -131,8 +134,10 @@ def get_stats_lam(beta0, n, sigma, lams, pen, ntrials=100, maxiter=100, verbose=
     qs = []
     for lam in lams:
         if verbose:
-            print lam
-        lmean, lqs = get_stats(beta0, n, sigma, lam, pen, ntrials=ntrials, maxiter=maxiter)
+            print(lam)
+        lmean, lqs = get_stats(
+            beta0, n, sigma, lam, pen, ntrials=ntrials, maxiter=maxiter
+        )
         means.append(lmean)
         qs.append(lqs)
     return np.array(means), np.array(qs)
@@ -152,7 +157,9 @@ def gen_snr_stats(beta0, n, sigmas, lams, pen, ntrials=100, maxiter=100):
     else:
         for sigma in sigmas:
             # get best value of lambda
-            means, _ = get_stats_lam(beta0, n, sigma, lams, pen, ntrials=20, maxiter=maxiter)
+            means, _ = get_stats_lam(
+                beta0, n, sigma, lams, pen, ntrials=20, maxiter=maxiter
+            )
             # best value of lambda
             lam = lams[np.argmin(means)]
             smean, sqs = get_stats(beta0, n, sigma, lam, pen, ntrials=ntrials)
@@ -176,7 +183,9 @@ def gen_dim_stats(beta0, ns, sigma, lams, pen, ntrials=100, maxiter=100, ncv=20)
     else:
         for n in ns:
             # get best value of lambda
-            means, _ = get_stats_lam(beta0, n, sigma, lams, pen, ntrials=ncv, maxiter=maxiter)
+            means, _ = get_stats_lam(
+                beta0, n, sigma, lams, pen, ntrials=ncv, maxiter=maxiter
+            )
             # best value of lambda
             lam = lams[np.argmin(means)]
             smean, sqs = get_stats(beta0, n, sigma, lam, pen, ntrials=ntrials)

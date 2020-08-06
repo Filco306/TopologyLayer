@@ -1,9 +1,11 @@
 from __future__ import print_function
+from torch.autograd import Function
+from .persistence import (
+    persistenceForwardCohom,
+    persistenceBackward,
+    persistenceForwardHom,
+)
 
-import torch
-
-from torch.autograd import Variable, Function
-from .persistence import SimplicialComplex, persistenceForwardCohom, persistenceBackward, persistenceForwardHom
 
 class SubLevelSetDiagram(Function):
     """
@@ -17,18 +19,19 @@ class SubLevelSetDiagram(Function):
             'hom2' = nz suppressing homology variant
             'cohom' = cohomology
     """
+
     @staticmethod
-    def forward(ctx, X, f, maxdim, alg='hom'):
+    def forward(ctx, X, f, maxdim, alg="hom"):
         ctx.retshape = f.shape
         f = f.view(-1)
         device = f.device
         ctx.device = device
         X.extendFloat(f.cpu())
-        if alg == 'hom':
+        if alg == "hom":
             ret = persistenceForwardHom(X, maxdim, 0)
-        elif alg == 'hom2':
+        elif alg == "hom2":
             ret = persistenceForwardHom(X, maxdim, 1)
-        elif alg == 'cohom':
+        elif alg == "cohom":
             ret = persistenceForwardCohom(X, maxdim)
         ctx.X = X
         ret = [r.to(device) for r in ret]

@@ -1,9 +1,8 @@
 from ..functional.levelset_dionysus import Diagramlayer as ripsdgm
 from ..util.process import remove_filler
-
-import torch
 import torch.nn as nn
 import numpy as np
+
 
 class RipsLayer(nn.Module):
     """
@@ -13,6 +12,7 @@ class RipsLayer(nn.Module):
         rmax   : maximum value of filtration (default=inf)
         verbose : print information
     """
+
     def __init__(self, maxdim=1, rmax=np.inf, verbose=False):
         super(RipsLayer, self).__init__()
         self.rmax = rmax
@@ -22,5 +22,5 @@ class RipsLayer(nn.Module):
 
     def forward(self, x):
         dgm = self.fnobj.apply(x, self.rmax, self.maxdim, self.verbose)
-        dgms = tuple(remove_filler(dgm[i], -np.inf) for i in range(self.maxdim+1))
+        dgms = tuple(remove_filler(dgm[i], -np.inf) for i in range(self.maxdim + 1))
         return dgms, True

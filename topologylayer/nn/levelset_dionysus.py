@@ -1,11 +1,10 @@
 from ..functional.levelset_dionysus import Diagramlayer as levelsetdgm
 from ..util.process import remove_filler
-
-import torch
 import torch.nn as nn
 import numpy as np
 from scipy.spatial import Delaunay
 import dionysus as d
+
 
 def init_freudenthal_2d(width, height):
     """
@@ -16,21 +15,21 @@ def init_freudenthal_2d(width, height):
     # 0-cells
     for i in range(height):
         for j in range(width):
-            ind = i*width + j
+            ind = i * width + j
             s.append(d.Simplex([ind]))
     # 1-cells
     for i in range(height):
-        for j in range(width-1):
-            ind = i*width + j
+        for j in range(width - 1):
+            ind = i * width + j
             s.append(d.Simplex([ind, ind + 1]))
-    for i in range(height-1):
+    for i in range(height - 1):
         for j in range(width):
-            ind = i*width + j
+            ind = i * width + j
             s.append(d.Simplex([ind, ind + width]))
     # 2-cells + diagonal 1-cells
-    for i in range(height-1):
-        for j in range(width-1):
-            ind = i*width + j
+    for i in range(height - 1):
+        for j in range(width - 1):
+            ind = i * width + j
             # diagonal
             s.append(d.Simplex([ind, ind + width + 1]))
             # 2-cells
@@ -49,6 +48,7 @@ class LevelSetLayer(nn.Module):
             "scipy" - use scipy freudenthal triangulation (default)
             "freudenthal" - use canonical freudenthal triangulation
     """
+
     def __init__(self, size, maxdim=1, complex="scipy"):
         super(LevelSetLayer, self).__init__()
         self.size = size
@@ -75,8 +75,8 @@ class LevelSetLayer(nn.Module):
 
     def forward(self, img):
         dgm = self.fnobj.apply(img, self.complex)
-        #dgm = dgm[0:(self.maxdim+1),:,:]
-        dgms = tuple(remove_filler(dgm[i], -np.inf) for i in range(self.maxdim+1))
+        # dgm = dgm[0:(self.maxdim+1),:,:]
+        dgms = tuple(remove_filler(dgm[i], -np.inf) for i in range(self.maxdim + 1))
         return dgms, False
 
 
@@ -88,8 +88,8 @@ def init_line_complex(p):
     Will add (p-1) 1-simplices
     """
     f = d.Filtration()
-    for i in range(p-1):
-        c = d.closure([d.Simplex([i, i+1])], 1)
+    for i in range(p - 1):
+        c = d.closure([d.Simplex([i, i + 1])], 1)
         for j in c:
             f.append(j)
     return f
@@ -102,6 +102,7 @@ class LevelSetLayer1D(nn.Module):
         size : number of features
     only returns H0
     """
+
     def __init__(self, size):
         super(LevelSetLayer1D, self).__init__()
         self.size = size

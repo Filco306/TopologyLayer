@@ -10,7 +10,7 @@ import numpy as np
 
 
 def sum_finite(d):
-    diff = d[:,0] - d[:,1]
+    diff = d[:, 0] - d[:, 1]
     inds = diff < np.inf
     return torch.sum(diff[inds])
 
@@ -36,7 +36,7 @@ for n in [100, 200, 400, 1000, 2000]:
     layer2 = LevelSetLayer1Dold(n)
     tb = time.time() - t0
     print("old construction = %f sec" % tb)
-    print("factor improvement = %f" % (tb/ta))
+    print("factor improvement = %f" % (tb / ta))
 
     t0 = time.time()
     dgm, issublevel = layer1(y)
@@ -46,7 +46,7 @@ for n in [100, 200, 400, 1000, 2000]:
     dgm2, issublevel2 = layer2(y)
     tb = time.time() - t0
     print("old forward = %f sec" % tb)
-    print("factor improvement = %f" % (tb/ta))
+    print("factor improvement = %f" % (tb / ta))
 
     p = sum_finite(dgm[0])
     t0 = time.time()
@@ -58,9 +58,9 @@ for n in [100, 200, 400, 1000, 2000]:
     p.backward()
     tb = time.time() - t0
     print("old backward = %f sec" % tb)
-    print("factor improvement = %f" % (tb/ta))
+    print("factor improvement = %f" % (tb / ta))
 
-for size in [(28,28), (64,64), (128,128)]:
+for size in [(28, 28), (64, 64), (128, 128)]:
     x = torch.rand(*size, dtype=torch.float).requires_grad_(True)
     print("\n\n2D complexes size =", size)
 
@@ -72,17 +72,17 @@ for size in [(28,28), (64,64), (128,128)]:
     layer2 = LevelSetLayer2Dold(size)
     tb = time.time() - t0
     print("old construction = %f sec" % tb)
-    print("factor improvement = %f" % (tb/ta))
+    print("factor improvement = %f" % (tb / ta))
 
     t0 = time.time()
     dgm, issublevel = layer1(x)
     ta = time.time() - t0
     print("\nnew forward = %f sec" % ta)
     t0 = time.time()
-    dgm2, issublevel2 = layer2(x.view(-1,1))
+    dgm2, issublevel2 = layer2(x.view(-1, 1))
     tb = time.time() - t0
     print("old forward  = %f sec" % tb)
-    print("factor improvement = %f" % (tb/ta))
+    print("factor improvement = %f" % (tb / ta))
 
     p = sum_finite(dgm[0])
     t0 = time.time()
@@ -94,6 +94,6 @@ for size in [(28,28), (64,64), (128,128)]:
     p.backward()
     tb = time.time() - t0
     print("old backward = %f sec" % tb)
-    print("factor improvement = %f" % (tb/ta))
+    print("factor improvement = %f" % (tb / ta))
 # print dgm
 # print dgm2

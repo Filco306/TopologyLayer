@@ -1,12 +1,9 @@
 from ..functional.sublevel import SubLevelSetDiagram
 from topologylayer.functional.persistence import SimplicialComplex
 from topologylayer.util.construction import unique_simplices
-
-import torch
 import torch.nn as nn
 import numpy as np
 from scipy.spatial import Delaunay
-import itertools
 
 
 class LevelSetLayer(nn.Module):
@@ -22,7 +19,8 @@ class LevelSetLayer(nn.Module):
 
     Note that the complex should be acyclic for the computation to be correct (currently)
     """
-    def __init__(self, complex, maxdim=1, sublevel=True, alg='hom'):
+
+    def __init__(self, complex, maxdim=1, sublevel=True, alg="hom"):
         super(LevelSetLayer, self).__init__()
         self.complex = complex
         self.maxdim = maxdim
@@ -33,7 +31,6 @@ class LevelSetLayer(nn.Module):
         # make sure complex is initialized
         self.complex.initialize()
 
-
     def forward(self, f):
         if self.sublevel:
             dgms = self.fnobj.apply(self.complex, f, self.maxdim, self.alg)
@@ -43,7 +40,6 @@ class LevelSetLayer(nn.Module):
             dgms = self.fnobj.apply(self.complex, f, self.maxdim, self.alg)
             dgms = tuple(-dgm for dgm in dgms)
             return dgms, False
-
 
 
 def init_tri_complex(width, height):
@@ -70,21 +66,21 @@ def init_freudenthal_2d(width, height):
     # 0-cells
     for i in range(height):
         for j in range(width):
-            ind = i*width + j
+            ind = i * width + j
             s.append([ind])
     # 1-cells
     for i in range(height):
-        for j in range(width-1):
-            ind = i*width + j
+        for j in range(width - 1):
+            ind = i * width + j
             s.append([ind, ind + 1])
-    for i in range(height-1):
+    for i in range(height - 1):
         for j in range(width):
-            ind = i*width + j
+            ind = i * width + j
             s.append([ind, ind + width])
     # 2-cells + diagonal 1-cells
-    for i in range(height-1):
-        for j in range(width-1):
-            ind = i*width + j
+    for i in range(height - 1):
+        for j in range(width - 1):
+            ind = i * width + j
             # diagonal
             s.append([ind, ind + width + 1])
             # 2-cells
@@ -102,30 +98,30 @@ def init_grid_2d(width, height):
     # 0-cells
     for i in range(height):
         for j in range(width):
-            ind = i*width + j
+            ind = i * width + j
             s.append([ind])
     # 1-cells
     for i in range(height):
-        for j in range(width-1):
-            ind = i*width + j
+        for j in range(width - 1):
+            ind = i * width + j
             s.append([ind, ind + 1])
-    for i in range(height-1):
+    for i in range(height - 1):
         for j in range(width):
-            ind = i*width + j
+            ind = i * width + j
             s.append([ind, ind + width])
     # 2-cells + diagonal 1-cells
-    for i in range(height-1):
-        for j in range(width-1):
-            ind = i*width + j
+    for i in range(height - 1):
+        for j in range(width - 1):
+            ind = i * width + j
             # diagonal
             s.append([ind, ind + width + 1])
             # 2-cells
             s.append([ind, ind + 1, ind + width + 1])
             s.append([ind, ind + width, ind + width + 1])
     # 2-cells + anti-diagonal 1-cells
-    for i in range(height-1):
-        for j in range(width-1):
-            ind = i*width + j
+    for i in range(height - 1):
+        for j in range(width - 1):
+            ind = i * width + j
             # anti-diagonal
             s.append([ind + 1, ind + width])
             # 2-cells
@@ -150,7 +146,8 @@ class LevelSetLayer2D(LevelSetLayer):
             'hom' = homology (default)
             'cohom' = cohomology
     """
-    def __init__(self, size, maxdim=1, sublevel=True, complex="freudenthal", alg='hom'):
+
+    def __init__(self, size, maxdim=1, sublevel=True, complex="freudenthal", alg="hom"):
         width, height = size
         tmpcomplex = None
         if complex == "freudenthal":
@@ -159,7 +156,9 @@ class LevelSetLayer2D(LevelSetLayer):
             tmpcomplex = init_grid_2d(width, height)
         elif complex == "delaunay":
             tmpcomplex = init_tri_complex(width, height)
-        super(LevelSetLayer2D, self).__init__(tmpcomplex, maxdim=maxdim, sublevel=sublevel, alg=alg)
+        super(LevelSetLayer2D, self).__init__(
+            tmpcomplex, maxdim=maxdim, sublevel=sublevel, alg=alg
+        )
         self.size = size
 
 
@@ -173,8 +172,8 @@ def init_line_complex(p):
     s = SimplicialComplex()
     for i in range(p):
         s.append([i])
-    for i in range(p-1):
-        s.append([i, i+1])
+    for i in range(p - 1):
+        s.append([i, i + 1])
     return s
 
 
@@ -189,10 +188,8 @@ class LevelSetLayer1D(LevelSetLayer):
             'cohom' = cohomology
     only returns H0
     """
-    def __init__(self, size, sublevel=True, alg='hom'):
+
+    def __init__(self, size, sublevel=True, alg="hom"):
         super(LevelSetLayer1D, self).__init__(
-            init_line_complex(size),
-            maxdim=0,
-            sublevel=sublevel,
-            alg=alg
-            )
+            init_line_complex(size), maxdim=0, sublevel=sublevel, alg=alg
+        )

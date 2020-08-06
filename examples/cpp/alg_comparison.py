@@ -8,9 +8,10 @@ import numpy as np
 
 
 def sum_finite(d):
-    diff = d[:,0] - d[:,1]
+    diff = d[:, 0] - d[:, 1]
     inds = diff < np.inf
     return torch.sum(diff[inds])
+
 
 # apparently there is some overhead the first time backward is called.
 # we'll just get it over with now.
@@ -21,7 +22,7 @@ dgm, issublevel = layer1(y)
 p = sum_finite(dgm[0])
 p.backward()
 
-algs = ['hom', 'hom2', 'cohom']
+algs = ["hom", "hom2", "cohom"]
 
 tcs = {}
 tfs = {}
