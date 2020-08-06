@@ -5,3 +5,4 @@ files.txt
 build/
 dist/
 topologylayer.egg-info/
+venv/
